@@ -20,15 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="가장큰수.cpp" />
-    <ClCompile Include="기능개발.cpp" />
-    <ClCompile Include="다리를지나는트럭.cpp" />
-    <ClCompile Include="더맵게.cpp" />
     <ClCompile Include="디스크컨트롤러.cpp" />
     <ClCompile Include="소스.cpp" />
-    <ClCompile Include="위장.cpp" />
-    <ClCompile Include="전화번호.cpp" />
-    <ClCompile Include="프린터.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
