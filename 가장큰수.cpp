@@ -9,7 +9,7 @@ namespace usingsort {
 
 
 	string solution(vector<int> numbers) {
-		string answer = "";
+		string answer = "    ";
 		vector<string> temp;
 
 		for (size_t i = 0; i < numbers.size(); i++)
