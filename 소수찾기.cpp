@@ -14,7 +14,7 @@ int solution(string numbers) {
 		input.push_back(inumber % 10);
 		inumber = inumber / 10;
 		if (inumber == 0)
-			break;
+			break;     
 	}
 
 	sort(input.begin(), input.end());
