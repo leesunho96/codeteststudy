@@ -20,8 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="디스크컨트롤러.cpp" />
-    <ClCompile Include="소스.cpp" />
+    <ClCompile Include="카펫cpp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
