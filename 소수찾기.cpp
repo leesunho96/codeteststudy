@@ -1,38 +1,73 @@
 #include "stdafx.h"
 
+
+bool ismakeable(int input, vector<int> inputvector)
+{
+	string stemp = to_string(input);
+	int correctNum = 0;
+
+	for (size_t i = 0; i < stemp.size(); i++)
+	{
+		for (size_t j = 0; j < inputvector.size(); j++)
+		{
+			// stemp[i] - '0' => char를 int로 변경시켜줌
+			if (stemp[i] - '0' == inputvector[j])
+			{
+				inputvector.erase(inputvector.begin() + j);
+				correctNum++;
+				break;
+			}
+		}
+	}
+
+	if (correctNum == stemp.size())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool isprimeNum(int input)
+{
+	int itemp = 2;
+	while (itemp * itemp <= input)
+	{
+		if (input % itemp == 0)
+			return false;
+		itemp++;
+	}
+	return true;
+}
+
+
 int solution(string numbers) {
 	int answer = 0;
-	vector<int> input;
-	vector<int> combination;
-	int digit = 1;
-	int inumber = stoi(numbers);
-
-
-
-	while (true)
+	vector<int> numberVector;
+	string stemp = "";
+	for (size_t i = 0; i < numbers.size(); i++)
 	{
-		input.push_back(inumber % 10);
-		inumber = inumber / 10;
-		if (inumber == 0)
-			break;     
+		numberVector.push_back(numbers[i] - '0');
+	}
+	sort(numberVector.begin(), numberVector.end(), greater<int>());
+
+	for (int i = 0; i < numberVector.size(); i++)
+	{
+		stemp = stemp + to_string(numberVector[i]);
 	}
 
-	sort(input.begin(), input.end());
+	int i = 2;
 
-	do {
-		int temp = 0;
-		for (int i = 0; i < input.size(); i++)
+	while (i <= stoi(stemp))
+	{
+		if (ismakeable(i, numberVector) && isprimeNum(i))
 		{
-			temp += pow(10, i) * input[i];
+			answer++;
 		}
-		combination.push_back(temp);
-	} while (next_permutation(input.begin(), input.end()));
-
-	for (size_t i = 0; i < combination.size(); i++)
-	{
-		cout << combination[i] << "    ";
+		i++;
 	}
-
 
 	return answer;
 }
@@ -40,7 +75,8 @@ int solution(string numbers) {
 
 int main()
 {
-	string input = "17";
-	solution(input);
+	string input = "011";
+
+	cout << solution(input);
 
 }
