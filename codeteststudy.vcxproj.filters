@@ -18,7 +18,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="소수찾기.cpp">
+    <ClCompile Include="타겟넘버.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
