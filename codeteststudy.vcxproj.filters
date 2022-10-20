@@ -18,7 +18,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="BackJoon1780_종이의집.cpp">
+    <ClCompile Include="BackJoon_리모컨.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

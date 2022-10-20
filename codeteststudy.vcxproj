@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BackJoon1780_종이의집.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="BackJoon_리모컨.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
