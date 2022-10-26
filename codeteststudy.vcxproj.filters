@@ -18,7 +18,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="BackJoon_케빈베이컨.cpp">
+    <ClCompile Include="Backjoon_1927_최소힙.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
