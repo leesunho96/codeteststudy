@@ -18,7 +18,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="백준2579_계단오르기.cpp">
+    <ClCompile Include="백준10162_전자레인지.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
