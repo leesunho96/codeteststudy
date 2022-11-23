@@ -18,7 +18,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="백준1049_기타줄.cpp">
+    <ClCompile Include="백준2965_섬의개수.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
