@@ -125,7 +125,7 @@ int Solution(int Width, int Height)
 			if(Map[i][j] == LAND && CheckMap[i][j] != VISITED)
 			{
 
-				
+				cout << i << " " << j << endl;
 				Check(i, j);
 				Result++;
 			}
