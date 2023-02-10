@@ -18,7 +18,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="백준11725_부모노드찾기.cpp">
+    <ClCompile Include="호텔대실.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

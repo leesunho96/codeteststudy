@@ -7,5 +7,6 @@
 #include <map>
 #include <queue>
 #include <limits>
+#include <list>
 
 using namespace std;
