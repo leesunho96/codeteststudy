@@ -18,6 +18,8 @@
 #include <array>
 #include <deque>
 
+#define DEBUG_MODE 1
+
 using namespace std;
 #define safedelete(x) if(x != nullptr) delete(x);
 /*
@@ -63,3 +65,27 @@ inline vector<tuple<int, int>> GetPathes(const tuple<int, int>& base)
 
     return ways;
 }
+
+
+class VectorToTuple
+{
+private:
+template <typename Array, std::size_t... Idx>
+static decltype(auto) array_to_tuple_impl(const Array& a, std::index_sequence<Idx...>)
+{
+    return std::make_tuple(a[Idx]...);
+}
+
+public:
+
+/*
+ * USAGE EXAMPLE
+ * vector<int> temp = {1, 2, 3, 4}
+ * VectorToTuple::vectorToTuple<string, 3>;
+ */
+template <typename T, std::size_t N>
+static decltype(auto) vectorToTuple(const vector<T>& a)
+{
+	return VectorToTuple::array_to_tuple_impl(a, make_index_sequence<N>());
+}
+};
