@@ -17,10 +17,12 @@
 #include <unordered_set>
 #include <array>
 #include <deque>
+#include <tuple>
 
-#define DEBUG_MODE 1
+
 
 using namespace std;
+
 #define safedelete(x) if(x != nullptr) delete(x);
 /*
  * 거리의 제곱의 형태로 반환. 일반적인 코드테스트의 경우에서는 해당 상태로 사용. 만약 필요하다면, sqrt 적용하여 처리.
@@ -53,18 +55,32 @@ bool IsInRange(const T& val, const T& min, const T& max)
     return val <= max && val >= min;
 }
 
+template<typename T>
+bool IsInRange(const T& compareVal, const T& maxVal)
+{
+	return IsInRange<T>(compareVal, 0, maxVal);
+}
+
+vector<tuple<int, int>> GetPathes(const tuple<int, int>& base, const int height, const int width)
+{
+	vector<tuple<int, int>> ways = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
+
+	for (auto& way : ways)
+	{
+		const auto [wayX, wayY] = way;
+		const auto [baseX, baseY] = base;
+
+		if(IsInRange(wayX + baseX, height) && IsInRange(wayY + baseY, width))
+			ways.push_back(make_tuple(wayY + baseY, wayX + baseX));
+	}
+	return ways;
+}
+
 inline vector<tuple<int, int>> GetPathes(const tuple<int, int>& base)
 {
-    vector<tuple<int, int>> ways = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
-
-    for (auto& way : ways)
-    {
-        get<0>(way) += get<0>(base);
-        get<1>(way) += get<1>(base);
-    }
-
-    return ways;
+    return GetPathes(base, numeric_limits<int>::max(), numeric_limits<int>::max());
 }
+
 
 
 class VectorToTuple
@@ -89,3 +105,82 @@ static decltype(auto) vectorToTuple(const vector<T>& a)
 	return VectorToTuple::array_to_tuple_impl(a, make_index_sequence<N>());
 }
 };
+
+
+
+template<typename T, typename mapValueType>
+bool FindInSetandSetMap(set<T>& setVal, unordered_map<T, mapValueType>& mapVal, const T& key)
+{
+	const bool&& result = (setVal.find(key) == setVal.end());
+	setVal.insert(key);
+
+	if(result)
+		mapVal[key] += static_cast<mapValueType>(1);
+	else
+		mapVal[key] = static_cast<mapValueType>(1);
+	
+	return result;
+}
+
+template<typename T, typename mapValueType, typename compare>
+bool FindInSetandSetMap(set<T, compare>& setVal, unordered_map<T, mapValueType>& mapVal, const T& key)
+{
+	const bool&& result = (setVal.find(key) == setVal.end());
+	setVal.insert(key);
+
+	if (result)
+		mapVal[key] += static_cast<mapValueType>(1);
+	else
+		mapVal[key] = static_cast<mapValueType>(1);
+
+	return result;
+}
+
+
+
+template<typename T, typename mapValueType, typename Hash>
+bool FindInSetandSetMap(set<T>& setVal, unordered_map<T, mapValueType, Hash>& mapVal, const T& key)
+{
+	const bool&& result = (setVal.find(key) == setVal.end());
+	setVal.insert(key);
+
+	if (result)
+		mapVal[key] += static_cast<mapValueType>(1);
+	else
+		mapVal[key] = static_cast<mapValueType>(1);
+
+	return result;
+}
+
+template<typename T, typename mapValueType, typename compare, typename Hash>
+bool FindInSetandSetMap(set<T, compare>& setVal, unordered_map<T, mapValueType, Hash>& mapVal, const T& key)
+{
+	const bool&& result = (setVal.find(key) == setVal.end());
+	setVal.insert(key);
+
+	if (result)
+		mapVal[key] = static_cast<mapValueType>(1);
+	else
+		mapVal[key] += static_cast<mapValueType>(1);
+
+	return result;
+}
+
+
+template<typename Conatiner, typename T>
+bool AllSameInContainer(const Conatiner& input, const T& Val)
+{
+	using ElemenType = remove_reference_t<decltype(*(begin(input)))>;
+
+	static_assert(is_same_v<ElemenType, T>, "Container element Type and Val Type must same");
+
+	bool answer = false;
+
+	for (auto val : input)
+	{
+		if(val != Val)
+			return false;
+	}
+
+	return true;
+}
