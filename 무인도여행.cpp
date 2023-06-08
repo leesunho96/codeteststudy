@@ -1,4 +1,4 @@
-/*
+/*https://school.programmers.co.kr/learn/courses/30/lessons/154540
  *
 메리는 여름을 맞아 무인도로 여행을 가기 위해 지도를 보고 있습니다. 지도에는 바다와 무인도들에 대한 정보가 표시돼 있습니다. 지도는 1 x 1크기의 사각형들로 이루어진 직사각형 격자 형태이며, 격자의 각 칸에는 'X' 또는 1에서 9 사이의 자연수가 적혀있습니다. 지도의 'X'는 바다를 나타내며, 숫자는 무인도를 나타냅니다. 이때, 상, 하, 좌, 우로 연결되는 땅들은 하나의 무인도를 이룹니다. 지도의 각 칸에 적힌 숫자는 식량을 나타내는데, 상, 하, 좌, 우로 연결되는 칸에 적힌 숫자를 모두 합한 값은 해당 무인도에서 최대 며칠동안 머물 수 있는지를 나타냅니다. 어떤 섬으로 놀러 갈지 못 정한 메리는 우선 각 섬에서 최대 며칠씩 머물 수 있는지 알아본 후 놀러갈 섬을 결정하려 합니다.
 
@@ -15,90 +15,79 @@ maps[i]는 'X' 또는 1 과 9 사이의 자연수로 이루어진 문자열입니다.
 
 #include "stdafx.h"
 
-const vector<pair<int, int>> cases = {pair<int, int>(1, 0),pair<int, int>(0, 1) ,pair<int, int>(-1, 0) ,pair<int, int>(0, -1) };
+using ISLAND = tuple<int, int>;
 
-optional<int> GetIsland(int x, int y, vector<vector<optional<int>>>& connectedMap)
+int GetConnectedIsland(map<ISLAND, int>& maps)
 {
-	if(connectedMap[x][y] == nullopt)
-		return nullopt;
+	set<ISLAND> founded;
+	queue<ISLAND> candidate;
+	int answer = 0;
+	auto baseIsland = *maps.begin();
+
+	
+	candidate.push(maps.begin()->first);
+	answer += maps.begin()->second;
+	maps.erase(maps.begin());
 
 
-	int result = 0;
-	queue<pair<int, int>> visited;
-	visited.push(pair<int, int>(x, y));
-
-	while(!visited.empty())
+	while(!candidate.empty())
 	{
-		auto present = visited.front();
-		visited.pop();
+		auto top = candidate.front();
+		candidate.pop();
 
-		for (auto next : cases)
+
+		auto pathes = GetPathes(top);
+
+		for (auto path : pathes)
 		{
-			auto nextIsland = pair<int, int>(present.first + next.first, present.second + next.second);
-
-			if(!IsInRange(nextIsland.first, static_cast<int>(connectedMap.size())))
-				continue;
-			if (!IsInRange(nextIsland.second, static_cast<int>(connectedMap[0].size())))
-				continue;
-			if(connectedMap[nextIsland.first][nextIsland.second] == nullopt)
+			if(maps.find(path) == maps.end())
 				continue;
 
-			visited.push(nextIsland);
-		}
+			if(founded.find(path) != founded.end())
+				continue;
 
-		auto presentIsland = connectedMap[present.first][present.second];
 
-		if(presentIsland.has_value())
-		{
-			result += connectedMap[present.first][present.second].value();
-			connectedMap[present.first][present.second] = nullopt;
+			answer += maps[path];
+			maps.erase(path);
+			founded.insert(path);
+			candidate.push(path);
 		}
 	}
 
-
-	return result;
+	return answer;
 }
-
 
 vector<int> solution(vector<string> maps)
 {
+	map<ISLAND, int> MAPCOST;
 	vector<int> answer;
-	vector<vector<optional<int>>> connectedMap;
 
-	// Initialize
+	const int MAPWIDTH = maps[0].size();
+	const int MAPHEIGHT = maps.size();
+
+	for (int width = 0; width < MAPWIDTH; width++)
 	{
-		for (auto mapLine : maps)
+		for (int height = 0; height < MAPHEIGHT; height++)
 		{
-			vector<optional<int>> temp;
+			const auto val = maps[height][width];
 
-			for (const auto mapRow : mapLine)
-			{
-				if (mapRow == 'X')
-					temp.push_back(nullopt);
-				else
-					temp.push_back(mapRow - '0');
-			}
-			connectedMap.push_back(temp);
+			if(val == 'X')
+				continue;
+
+			MAPCOST[make_tuple(height, width)] = val - '0';
 		}
 	}
 
+	if(MAPCOST.empty())
+		return vector<int>{-1};
 
-	for (int i = 0; i< maps.size(); i++)
+	while (!MAPCOST.empty())
 	{
-		for (int j = 0; j < maps[i].size(); j++)
-		{
-			auto result = GetIsland(i, j, connectedMap);
-
-			if(result.has_value())
-				answer.push_back(result.value());
-			
-		}
+		answer.push_back(GetConnectedIsland(MAPCOST));
 	}
 
 	sort(answer.begin(), answer.end());
-	
-	if(answer.empty())
-		return vector<int>(1, -1);
+
 	return answer;
 }
 
