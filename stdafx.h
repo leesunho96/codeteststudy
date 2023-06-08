@@ -61,24 +61,25 @@ bool IsInRange(const T& compareVal, const T& maxVal)
 	return IsInRange<T>(compareVal, 0, maxVal);
 }
 
-vector<tuple<int, int>> GetPathes(const tuple<int, int>& base, const int height, const int width)
+inline vector<tuple<int, int>> GetPathes(const tuple<int, int>& base, const int height, const int width)
 {
 	vector<tuple<int, int>> ways = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
+	vector<tuple<int, int>> output;
 
 	for (auto& way : ways)
 	{
-		const auto [wayX, wayY] = way;
-		const auto [baseX, baseY] = base;
+		const auto[wayX, wayY] = way;
+		const auto[baseX, baseY] = base;
 
-		if(IsInRange(wayX + baseX, height) && IsInRange(wayY + baseY, width))
-			ways.push_back(make_tuple(wayY + baseY, wayX + baseX));
+		if (IsInRange(wayX + baseX, height) && IsInRange(wayY + baseY, width))
+			output.emplace_back(make_tuple(wayY + baseY, wayX + baseX));
 	}
-	return ways;
+	return output;
 }
 
 inline vector<tuple<int, int>> GetPathes(const tuple<int, int>& base)
-{
-    return GetPathes(base, numeric_limits<int>::max(), numeric_limits<int>::max());
+{	
+	return GetPathes(base, numeric_limits<int>::max(), numeric_limits<int>::max());
 }
 
 
