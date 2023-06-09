@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <cstdio>
 #include <string>
 #include <algorithm>
 #include <vector>
@@ -49,12 +48,15 @@ optional<T> GetLinear(const tuple<T, T> p1, const tuple<T, T> p2)
     return (p2y - p1y) / (p2x - p1y);
 }
 
+
+// min <= val <= max
 template<typename T>
 bool IsInRange(const T& val, const T& min, const T& max)
 {
     return val <= max && val >= min;
 }
 
+// 0 <= compareVal <= maxVal
 template<typename T>
 bool IsInRange(const T& compareVal, const T& maxVal)
 {
