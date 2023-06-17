@@ -17,10 +17,14 @@
 #include <array>
 #include <deque>
 #include <tuple>
-
+#include <cassert>
+#include <thread>
+#include <mutex>
+#include <functional>
 
 
 using namespace std;
+#define DEBUG_MODE 1
 
 #define safedelete(x) if(x != nullptr) delete(x);
 /*
@@ -187,3 +191,24 @@ bool AllSameInContainer(const Conatiner& input, const T& Val)
 
 	return true;
 }
+
+
+
+template<typename T>
+void PrintAllIngredient(const string& type ,const vector<T>& input)
+{
+	cout << type << " { ";
+
+	for (const auto& str : input)
+	{
+		cout << str << " , " ;
+	}
+	cout << " }" << endl;
+}
+template<typename T>
+void PrintAllIngredient(const vector<T>& input)
+{
+	PrintAllIngredient<T>("", input);
+}
+
+
