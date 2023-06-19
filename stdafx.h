@@ -21,6 +21,7 @@
 #include <thread>
 #include <mutex>
 #include <functional>
+#include <type_traits>
 
 
 using namespace std;
@@ -193,6 +194,20 @@ bool AllSameInContainer(const Conatiner& input, const T& Val)
 }
 
 
+// Primary template for the IsVector struct
+template <typename T>
+struct IsVector : std::false_type {};
+
+// Specialization for vector types
+template <typename... Args>
+struct IsVector<std::vector<Args...>> : std::true_type {};
+// Helper function to check if a type is a vector
+template <typename T>
+bool CheckIsVector()
+{
+	return IsVector<T>::value;
+}
+
 
 template<typename T>
 void PrintAllIngredient(const string& type ,const vector<T>& input)
@@ -204,11 +219,59 @@ void PrintAllIngredient(const string& type ,const vector<T>& input)
 		cout << str << " , " ;
 	}
 	cout << " }" << endl;
+	
 }
+
 template<typename T>
 void PrintAllIngredient(const vector<T>& input)
 {
 	PrintAllIngredient<T>("", input);
 }
 
+template<typename T>
+void PrintParam(const T& param)
+{
+	cout << param << endl;
+}
 
+template <typename T>
+void PrintParam(const vector<T>& param)
+{
+	for (auto a : param)
+	{
+		cout << a << " ";
+	}
+	cout << endl;
+}
+
+
+
+template<typename... Args, std::size_t... Is>
+void PrintParameterHelper(const std::tuple<Args...>& printTuple, std::index_sequence<Is...>)
+{
+	((PrintParam(std::get<Is>(printTuple))), ...);
+}
+
+template<typename... Args>
+void PrintParameter(const std::tuple<Args...>& printTuple)
+{
+	constexpr std::size_t tupleSize = sizeof...(Args);
+	PrintParameterHelper(printTuple, std::make_index_sequence<tupleSize>());
+}
+
+template<typename Func, typename ResultType, typename... Args>
+void TestFunction(Func func, const std::tuple<Args...>& args, ResultType expected)
+{
+	auto result = apply(func, args);
+
+	PrintParameter(args);
+
+	if (result == expected)
+	{
+		std::cout << "Test passed! Result: " << result << std::endl;
+	}
+	else
+	{
+		std::cout << "Test failed! Expected: " << expected << ", Result: " << result << std::endl;
+	}
+}
