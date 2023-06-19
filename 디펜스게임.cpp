@@ -152,6 +152,11 @@ int solution(int n, int k, vector<int> enemy)
 
     return maxRound;
 }
+int Add(int a, int b)
+{
+    return a + b;
+}
+
 
 int main()
 {
@@ -163,19 +168,12 @@ int main()
        { 2, 4, vector<int>{3, 3, 3, 3}, 4}
     };
 
-
-
     for (auto testCase : testCases)
     {
-		auto[n, k, enemy, result] = testCase;
-
-        auto getResult = solution(n, k, enemy);
-
-        cout<<"n : " << n << ", k : " << k << " ";
-        PrintAllIngredient<int>("enemy : ", enemy);
-        cout << "Expected Result : " << result << ", GetResult : " << getResult << endl;
-
-        cout << "Pass : " << (result == getResult ? "True" : "False") << endl;
+        auto [n, k, enemy, result] = testCase;
+        auto tp = make_tuple(n, k, enemy);
+        
+        TestFunction(solution, tp, result);        
     }
 
 }
