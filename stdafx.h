@@ -244,6 +244,16 @@ void PrintParam(const vector<T>& param)
 	cout << endl;
 }
 
+template <typename T>
+void PrintParam (const set<T> & param)
+{
+
+	for (auto a = param.begin(); a != param.end(); ++a)
+	{
+		cout << *a <<  " ";
+	}
+}
+
 
 
 template<typename... Args, std::size_t... Is>
@@ -274,4 +284,5 @@ void TestFunction(Func func, const std::tuple<Args...>& args, ResultType expecte
 	{
 		std::cout << "Test failed! Expected: " << expected << ", Result: " << result << std::endl;
 	}
+	cout << endl;
 }
