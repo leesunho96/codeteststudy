@@ -5,138 +5,131 @@
 #define LAVER 'L'
 #define PATH 'O'
 #define WALL 'X'
+#define HEIGHT 0
+#define WIDTH 1
+#define WEIGHT 2
 
-struct POINT
+using TUPLE = tuple<int, int, int>;
+using POINT = tuple<int, int>;
+
+
+
+int FindWeight(POINT start, POINT exit, int mapHeight, int mapWidth, optional<bool> bVisitedArr[][101])
 {
-public:
-	int x;
-	int y;
-
-public:
-	POINT() : x(0), y(0) {};
-	POINT(int x, int y) : x(x), y(y) {};
-
-
-
-	POINT operator+ (const POINT& rhs) const
+	struct cmp
 	{
-		return POINT(x + rhs.x, y + rhs.y);
+		const bool operator() (const TUPLE& val1, const TUPLE& val2)
+		{
+			return get<WEIGHT>(val1) < get<WEIGHT>(val2);
+		}
 	};
+	priority_queue<TUPLE, vector<TUPLE>, cmp> pq;
 
-	bool operator== (const POINT& rhs) const
+	pq.push(tuple_cat(start, make_tuple(0)));
+	bVisitedArr[get<0>(start)][get<1>(start)] = true;
+
+
+	while (!pq.empty())
 	{
-		return this->x == rhs.x && this->y == rhs.y;
-	};
+		auto top = pq.top();
+		pq.pop();
+
+		auto [height, width, weight] = top;
+
+		const auto pathes = GetPathes(make_tuple(height, width), mapHeight, mapWidth);
+
+		for (auto path : pathes)
+		{
+			if (path == exit)
+				return weight + 1;
+
+			const auto& [pathHeight, pathWidth] = path;
+			auto& targetPoint = bVisitedArr[pathHeight][pathWidth];
+
+			// 예외처리. 해당 지점이 벽인 경우.
+			{
+				if (!targetPoint.has_value())
+					continue;
+			}
+			const auto bVisitedThisPoint = targetPoint.value();
+
+			if (bVisitedThisPoint)
+				continue;
+
+			targetPoint = true;
+			pq.push(make_tuple(pathHeight, pathWidth, weight + 1));
+		}
+
+	}
+	return -1;
 
 };
 
-const POINT Pathes[4] = {POINT(1, 0), POINT(-1, 0), POINT(0, 1), POINT(0, -1)};
 
-
-bool IsAvailablePath(const POINT& point, int width, int height, const vector<string>& maps)
-{
-	if(point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
-	{
-		if(maps[point.x][point.y] != WALL)
-			return true;
-	}
-	return false;
-}
-
-
-int bfs(POINT start, POINT end, vector<string>& maps)
-{
-	bool visited[100][100] = {{false, }, };
-	int weights[100][100] = {{0, },};
-	const int width = maps[0].size();
-	const int height = maps.size();
-
-	queue<POINT> q;
-
-	q.push(start);
-	visited[start.x][start.y] = true;
-
-	while(!q.empty())
-	{
-		POINT top = q.front();
-
-		if(top == end)
-		{
-			return weights[top.x][top.y];
-		}
-
-		q.pop();
-		for(auto a : Pathes)
-		{
-			POINT newWay = a + top;
-			if(IsAvailablePath(newWay, width, height, maps))
-			{
-				if(!visited[newWay.x][newWay.y])
-				{
-					q.push(newWay);
-					visited[newWay.x][newWay.y] = true;
-					weights[newWay.x][newWay.y] = weights[top.x][top.y] + 1;
-				}
-			}
-		}		
-	}
-
-	return int_max;
-}
 
 int solution(vector<string> maps)
 {
-	int result = 0;
-	const int width = maps[0].size();
-	const int height = maps.size();
+	const int mapHeight = maps.size();
+	const int mapWidth = maps[0].size();
 
-	POINT start;
-	POINT end;
-	POINT laber;
+	POINT start, exit, laver;
+	
+	optional<bool> bVisitedArr[101][101];
 
-
-	// INITIALIZE POINT
+	// InitializeData;
 	{
-	// height
-	for (int i = 0; i < maps.size(); i++)
-	{
-		// width
-		for (int j = 0; j < maps[i].size(); j++)
+		for (int i = 0; i < mapHeight; i++)
 		{
-			if(maps[j][i] == START)
+			for (int j = 0; j < mapWidth; j++)
 			{
-				start = POINT(j, i);
+				const auto& point = maps[i][j];
+
+				bVisitedArr[i][j] = false;
+				if(point == START)
+					start = POINT{i, j};
+				else if(point == EXIT)
+					exit = POINT{i, j}; 
+				else if(point == LAVER)
+					laver = POINT{i, j};
+				else if(point == WALL)
+					bVisitedArr[i][j] = nullopt;				
 			}
-			else if(maps[j][i] == EXIT)
-			{
-				end = POINT(j, i);
-			}
-			else if(maps[j][i] == LAVER)
-			{
-				laber = POINT(j, i);
-			}
-		}
-	}
-	}
+		}	
+	}	
+	vector<int> subWeight;
+
+	subWeight.push_back(FindWeight(start, laver, mapHeight, mapWidth, bVisitedArr));
+	subWeight.push_back(FindWeight(laver, exit, mapHeight, mapWidth, bVisitedArr));
+
+	if(subWeight[0] == -1 || subWeight[1] == -1)
+		return -1;
+	
 
 
-
-	int startToLaber = bfs(start, laber, maps);
-	int laberToExit = bfs(laber, end, maps);
-
-	return startToLaber == int_max || laberToExit == int_max ? -1 : startToLaber + laberToExit;
+	return subWeight[0] + subWeight[1];
 }
 
 int main()
 {
-    vector<string> map;
 
-    string input[] ={ "SOOOL","XXXXO","OOOOO","OXXXX","OOOOE" }; //{ "LOOXS","OOOOX","OOOOO","OOOOO","EOOOO" };
+	vector<tuple<vector<string>, int>> testCases
+	{
+		{vector<string>{"SOOOL", "XXXXO", "OOOOO", "OXXXX", "OOOOE"}, 16},
+		{{"LOOXS", "OOOOX", "OOOOO", "OOOOO", "EOOOO"}, - 1},
+		{{"SOEOL","XXXXO","OOOOO","OXXXX","OOOOO"}, 6 },
+		{{"SLEOX", "XXXXO", "OOOOO", "OXXXX", "OOOOO"},2 },
+		{{"SELOX", "XXXXO", "OOOOO", "OXXXX", "OOOOO"},3 },
+		{{"SLXOX", "EXXXO", "OOOOO", "OXXXX", "OOOOO"},3 },
+		{{"SXXOX", "EXXXL", "OOXOO", "OXXXX", "OOOOO"},-1 }
+	};
 
-    for (auto a : input)
-    {
-	    map.push_back(a);
-    }
 
-	cout << solution(map);
+
+	for (const auto& testCase : testCases)
+	{
+		const auto& [ mapstr, result] = testCase;
+
+		TestFunction(solution, make_tuple(mapstr), result);
+	}
+	
 }
