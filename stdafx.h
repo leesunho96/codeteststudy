@@ -22,17 +22,26 @@
 #include <mutex>
 #include <functional>
 #include <type_traits>
+#include <sstream>
 
 
-using namespace std;
+
+
 #define DEBUG_MODE 1
 
 #define safedelete(x) if(x != nullptr) delete(x);
+
+using namespace std;
+
+
+
+namespace MATH
+{
 /*
  * 거리의 제곱의 형태로 반환. 일반적인 코드테스트의 경우에서는 해당 상태로 사용. 만약 필요하다면, sqrt 적용하여 처리.
  */
 template<typename T>
-T GetDistance(const std::tuple<T, T>& basePoint, const std::tuple<T, T>& targetPoint)
+T GetDistance(const  tuple<T, T>& basePoint, const  tuple<T, T>& targetPoint)
 {
     auto [x0, y0] = basePoint;
     auto [x1, y1] = targetPoint;
@@ -67,7 +76,10 @@ bool IsInRange(const T& compareVal, const T& maxVal)
 {
 	return IsInRange<T>(compareVal, 0, maxVal);
 }
+}
 
+namespace UTILITY
+{
 inline vector<tuple<int, int>> GetPathes(const tuple<int, int>& base, const int height, const int width)
 {
 	vector<tuple<int, int>> ways = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
@@ -78,7 +90,7 @@ inline vector<tuple<int, int>> GetPathes(const tuple<int, int>& base, const int 
 		const auto[wayX, wayY] = way;
 		const auto[baseX, baseY] = base;
 
-		if (IsInRange(wayX + baseX, height) && IsInRange(wayY + baseY, width))
+		if (MATH::IsInRange(wayX + baseX, height) && MATH::IsInRange(wayY + baseY, width))
 			output.emplace_back(make_tuple(wayY + baseY, wayX + baseX));
 	}
 	return output;
@@ -89,15 +101,13 @@ inline vector<tuple<int, int>> GetPathes(const tuple<int, int>& base)
 	return GetPathes(base, numeric_limits<int>::max(), numeric_limits<int>::max());
 }
 
-
-
 class VectorToTuple
 {
 private:
-template <typename Array, std::size_t... Idx>
-static decltype(auto) array_to_tuple_impl(const Array& a, std::index_sequence<Idx...>)
+template <typename Array,  size_t... Idx>
+static decltype(auto) array_to_tuple_impl(const Array& a,  index_sequence<Idx...>)
 {
-    return std::make_tuple(a[Idx]...);
+    return  make_tuple(a[Idx]...);
 }
 
 public:
@@ -107,7 +117,7 @@ public:
  * vector<int> temp = {1, 2, 3, 4}
  * VectorToTuple::vectorToTuple<string, 3>;
  */
-template <typename T, std::size_t N>
+template <typename T,  size_t N>
 static decltype(auto) vectorToTuple(const vector<T>& a)
 {
 	return VectorToTuple::array_to_tuple_impl(a, make_index_sequence<N>());
@@ -193,14 +203,17 @@ bool AllSameInContainer(const Conatiner& input, const T& Val)
 	return true;
 }
 
+}
 
+namespace TESTFUNC
+{
 // Primary template for the IsVector struct
 template <typename T>
-struct IsVector : std::false_type {};
+struct IsVector :  false_type {};
 
 // Specialization for vector types
 template <typename... Args>
-struct IsVector<std::vector<Args...>> : std::true_type {};
+struct IsVector< vector<Args...>> :  true_type {};
 // Helper function to check if a type is a vector
 template <typename T>
 bool CheckIsVector()
@@ -244,6 +257,16 @@ void PrintParam(const vector<T>& param)
 	cout << endl;
 }
 
+template<typename T>
+void PrintParam(const vector<vector<T>>& param)
+{
+	for (auto a : param)
+		PrintParam(a);
+
+	cout << endl;
+}
+
+
 template <typename T>
 void PrintParam (const set<T> & param)
 {
@@ -256,21 +279,21 @@ void PrintParam (const set<T> & param)
 
 
 
-template<typename... Args, std::size_t... Is>
-void PrintParameterHelper(const std::tuple<Args...>& printTuple, std::index_sequence<Is...>)
-{
-	((PrintParam(std::get<Is>(printTuple))), ...);
+template<typename... Args, size_t... Is>
+void PrintParameterHelper(const tuple<Args...>& printTuple, index_sequence<Is...>)
+{	
+	((PrintParam(get<Is>(printTuple))), ...);
 }
 
 template<typename... Args>
-void PrintParameter(const std::tuple<Args...>& printTuple)
+void PrintParameter(const tuple<Args...>& printTuple)
 {
-	constexpr std::size_t tupleSize = sizeof...(Args);
-	PrintParameterHelper(printTuple, std::make_index_sequence<tupleSize>());
+	constexpr size_t tupleSize = sizeof...(Args);
+	PrintParameterHelper(printTuple, make_index_sequence<tupleSize>());
 }
 
 template<typename Func, typename ResultType, typename... Args>
-void TestFunction(Func func, const std::tuple<Args...>& args, ResultType expected)
+void TestFunction(Func func, const tuple<Args...>& args, ResultType expected)
 {
 	auto result = apply(func, args);
 
@@ -278,11 +301,87 @@ void TestFunction(Func func, const std::tuple<Args...>& args, ResultType expecte
 
 	if (result == expected)
 	{
-		std::cout << "Test passed! Result: " << result << std::endl;
+		 cout << "Test passed! Result: " << result <<  endl;
 	}
 	else
 	{
-		std::cout << "Test failed! Expected: " << expected << ", Result: " << result << std::endl;
+		 cout << "Test failed! Expected: " << expected << ", Result: " << result <<  endl;
 	}
 	cout << endl;
 }
+}
+
+namespace DEBUGFUNC
+{
+	template<typename T>
+	ostream& operator<<(ostream& stream, const vector<T>& values)
+	{
+		for(const auto a : values)
+			stream << a << " ";
+		return stream;
+	}
+
+	template<typename ...Ts, size_t ...Is>
+	ostream& println_tuple_impl(ostream& os, tuple<Ts...> tuple, index_sequence<Is...>)
+	{
+		static_assert(sizeof...(Is) == sizeof...(Ts), "Indices must have same number of elements as tuple types!");
+		static_assert(sizeof...(Ts) > 0, "Cannot insert empty tuple into stream.");
+		auto last = sizeof...(Ts); // assuming index sequence 0,...,N-1
+		return ((os << get<Is>(tuple) << " "), ...);
+	}
+
+	template<typename ...Ts>
+	ostream& operator<<(ostream& os, const tuple<Ts...>& tuple)
+	{
+		return println_tuple_impl(os, tuple, index_sequence_for<Ts...>{});
+	}
+
+	template<typename T>
+	void printStr_impl(const  string& str, const T& val)
+	{
+		int i = str.find('%');
+
+		if (i == -1)
+		{
+			static_assert(true, "Semantic Error in printStr_impl");
+		}
+
+		i > 0 ?
+			 cout <<  string(str.begin(), str.begin() + i) :  cout <<  string();
+
+		 cout << val;
+
+		if (str.begin() + i + 1 < str.end())
+		{
+			 cout <<  string(str.begin() + i + 1, str.end());
+		}
+	}
+
+	template<typename T, typename... Args>
+	void printStr_impl(const  string& str, const T& val, Args... args)
+	{
+		int i = str.find('%');
+
+		if (i == str.npos)
+		{
+			static_assert(true, "Semantic Error in printStr_impl");
+		}
+
+		i > 0 ? printStr_impl( string(str.begin(), str.begin() + i), val) : printStr_impl( string("%"), val);
+
+		printStr_impl( string(str.begin() + i + 1, str.end()), args...);
+	}
+	
+	template<typename T, typename... Args>
+	void printStr(const  string& str, const T& val, Args... args)
+	{
+		printStr_impl(str, val, args...);
+	}
+}
+
+
+
+using namespace MATH;
+using namespace UTILITY;
+using namespace DEBUGFUNC;
+using namespace TESTFUNC;
