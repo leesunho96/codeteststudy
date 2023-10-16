@@ -24,9 +24,10 @@
 #include <type_traits>
 #include <sstream>
 #include <memory>
+#include <numeric>
 
 
-#define DEBUG_MODE 1
+//#define DEBUG_MODE 1
 
 #define safedelete(x) if(x != nullptr) delete(x);
 
@@ -109,6 +110,28 @@ namespace MATH
 	{
 		return IsInRange<T>(compareVal, 0, maxVal);
 	}
+
+	template<typename Container>
+	typename Container::value_type GetGCDInContainer(const Container& container)
+	{
+		if (container.empty())
+		{
+			throw std::invalid_argument("Container is empty");
+		}
+		using typeName = typename Container::value_type;
+		auto sortedContainer = container;  // Create a copy to avoid modifying the original container
+		std::sort(sortedContainer.begin(), sortedContainer.end(), std::greater<typeName>());
+
+		auto result = sortedContainer[0];
+
+		for (const auto& val : sortedContainer)
+		{
+			result = std::gcd(result, val);
+		}
+
+		return result;
+	}
+
 }
 
 namespace UTILITY
@@ -152,7 +175,7 @@ namespace UTILITY
 		template <typename T, size_t N>
 		static decltype(auto) vectorToTuple(const vector<T>& a)
 		{
-			assert(N > a.size(), "Container's value doesn't enough for tuple Size");
+			//assert(N > a.size(), "Container's value doesn't enough for tuple Size");
 			return VectorToTuple::array_to_tuple_impl(a, make_index_sequence<N>());
 		}
 	};
@@ -344,5 +367,7 @@ namespace DEBUGFUNC
 
 using namespace MATH;
 using namespace UTILITY;
-using namespace DEBUGFUNC;
 using namespace TESTFUNC;
+using namespace DEBUGFUNC;
+
+
