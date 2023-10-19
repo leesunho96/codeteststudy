@@ -27,7 +27,7 @@
 #include <numeric>
 
 
-//#define DEBUG_MODE 1
+#define DEBUG_MODE 1
 
 #define safedelete(x) if(x != nullptr) delete(x);
 
@@ -97,7 +97,7 @@ namespace MATH
 	}
 
 
-	// min <= val <= max
+	/* min <= val <= max, Can handle only single value. can not handle conatiner or pair/tuple. */
 	template <typename T>
 	bool IsInRange(const T& val, const T& min, const T& max)
 	{
@@ -130,6 +130,15 @@ namespace MATH
 		}
 
 		return result;
+	}
+
+	inline unsigned int GetManhattanDistance(const tuple<int, int> start, const tuple<int, int> end)
+	{
+		return abs(get<0>(start) - get<0>(end)) + abs(get<1>(start) - get<1>(end));
+	}
+	inline unsigned int GetManhattanDistance(const int startX, const int startY, const int endX, const int endY)
+	{
+		return GetManhattanDistance(tie(startX, startY), tie(endX, endY));
 	}
 
 }
@@ -175,7 +184,11 @@ namespace UTILITY
 		template <typename T, size_t N>
 		static decltype(auto) vectorToTuple(const vector<T>& a)
 		{
-			//assert(N > a.size(), "Container's value doesn't enough for tuple Size");
+
+#ifndef DEBUG_MODE
+			assert(N > a.size(), "Container's value doesn't enough for tuple Size");
+#endif
+
 			return VectorToTuple::array_to_tuple_impl(a, make_index_sequence<N>());
 		}
 	};
@@ -255,6 +268,19 @@ namespace UTILITY
 		}
 
 		return true;
+	}
+
+
+
+	/*
+	 * 00:00 의 형태로 입력하여야 정상 작동.
+	 */
+	inline int STimeToITime(const string& time)
+	{
+		if(time.size() != 5)
+			static_assert(true, "Digit Does Not Match");
+
+		return 60 * stoi(time.substr(0, 2)) + stoi(time.substr(3, 2));
 	}
 }
 
