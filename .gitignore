@@ -270,3 +270,4 @@ codeteststudy.vcxproj.filters
 codeteststudy.vcxproj
 codeteststudy.vcxproj.filters
 stdafx.h
+*.vcxproj
