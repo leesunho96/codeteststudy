@@ -73,7 +73,7 @@ alp	cop	problems	result
 #include "stdafx.h"
 
 // 효율성 실패.
-/*
+
 int solution(int alp, int cop, vector<vector<int>> problems) {
 	int answer = 0;
 	int maxAlp = numeric_limits<int>::min(), maxCop = numeric_limits<int>::min();
@@ -126,12 +126,15 @@ int solution(int alp, int cop, vector<vector<int>> problems) {
 		{
 			const auto&[targetAlp, targetCop] = tie(maxAlp, maxCop);
 			const auto&[alp_req, cop_req, alp_rew, cop_rew, cost] = VectorToTuple::vectorToTuple<int, 5>(problem);
-			const auto&[nextAlp, nextCop] = make_pair(presentAlp + alp_rew, presentCop + cop_rew);
+			auto [nextAlp, nextCop] = make_pair(presentAlp + alp_rew, presentCop + cop_rew);
 
 			if (presentAlp < alp_req || presentCop < cop_req)
 				return;
-			if (nextAlp > targetAlp || nextCop > targetCop)
-				return;
+
+
+			// 원하는 값은 모든 문제를 풀 수 있는 최소한의 Cop/Alp. dp[alp][cop]의 값이 아니다. 따라서 그보다 큰 값이 나올 경우, 그냥 최대값에 입력.
+			nextAlp = min(targetAlp, nextAlp);
+			nextCop = min(targetCop, nextCop);
 
 			const int&& newCost = cost + dp[presentAlp][presentCop];
 			const int& pastCost = dp[nextAlp][nextCop];
@@ -181,96 +184,6 @@ int solution(int alp, int cop, vector<vector<int>> problems) {
 	}
 	return dp[maxAlp][maxCop];
 }
-
-
-*/
-
-
-int solution(int alp, int cop, vector<vector<int>> problems) {
-	int answer = 0;
-	int maxAlp = numeric_limits<int>::min(), maxCop = numeric_limits<int>::min();
-	array<array<int, 181>, 181> dp;
-
-	// Initialize
-	{
-		// Req
-		for (const auto& problem : problems)
-		{
-			const auto&[reqAlp, reqCop] = tie(problem[0], problem[1]);
-			// Get Required Alp/Cop Value
-			{
-				if (maxAlp < reqAlp)
-					maxAlp = reqAlp;
-				if (maxCop < reqCop)
-					maxCop = reqCop;
-			}
-		}
-
-
-		for (auto& dpi : dp)
-		{
-			for (auto& dpj : dpi)
-			{
-				dpj = numeric_limits<int>::max();
-			}
-		}
-
-		for (int tempAlp = 0; tempAlp <= alp; tempAlp++)
-		{
-			for (int tempCop = 0; tempCop <= cop; tempCop++)
-				dp[tempAlp][tempCop] = 0;
-		}
-	}
-
-	// Exception
-	{
-		if (alp >= maxAlp && cop >= maxCop)
-			return 0;
-	}
-
-	// Sequence
-	{
-		auto f = [&](int presentAlp, int presentCop, const vector<int>& problem) mutable
-		{
-			const auto&[targetAlp, targetCop] = tie(maxAlp, maxCop);
-			const auto&[alp_req, cop_req, alp_rew, cop_rew, cost] = VectorToTuple::vectorToTuple<int, 5>(problem);
-			
-			if(presentAlp < alp_req || presentCop < cop_req)
-				return;
-
-			if(presentAlp - alp_rew < 0 || presentCop - cop_rew < 0)
-				return;
-
-			const auto& newCost = cost + dp[presentAlp - alp_rew][presentCop - cop_rew];
-			const auto& pastCost = dp[presentAlp][presentCop];
-
-
-			
-
-			
-		};
-
-		{
-			const auto&[targetAlp, targetCop] = tie(maxAlp, maxCop);
-
-			for (int presentAlp = alp; presentAlp <= targetAlp; presentAlp++)
-			{
-				for (int presentCop = cop; presentCop <= targetCop; presentCop++)
-				{
-					
-
-					for (const auto& problem : problems)
-					{
-						f(presentAlp, presentCop, problem);
-					}
-
-				}
-			}
-		}
-	}
-	return dp[maxAlp][maxCop];
-}
-
 
 
 int main()
