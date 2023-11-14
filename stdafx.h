@@ -27,7 +27,7 @@
 #include <numeric>
 
 
-#define DEBUG_MODE 1
+//#define DEBUG_MODE 1
 
 #define safedelete(x) if(x != nullptr) delete(x);
 
@@ -186,7 +186,7 @@ namespace UTILITY
 		{
 
 #ifndef DEBUG_MODE
-			assert(N > a.size(), "Container's value doesn't enough for tuple Size");
+			//assert(N > a.size(), "Container's value doesn't enough for tuple Size");
 #endif
 
 			return VectorToTuple::array_to_tuple_impl(a, make_index_sequence<N>());
